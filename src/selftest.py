@@ -60,7 +60,7 @@ def matrix(delay_ms=120):
     panel.show()
 
 
-def mic(frames=20_000):
+def mic(frames=2000):
     """Print peak sample values; they should rise when you make a noise."""
     microphone = _microphone()
     try:
@@ -129,7 +129,7 @@ def mic_channels(frames=20):
         audio.deinit()
 
 
-def bands(frames=20):
+def bands(frames=200):
     """Print band levels; whistling should move the energy between columns."""
     microphone = _microphone()
     spectrum = Spectrum(

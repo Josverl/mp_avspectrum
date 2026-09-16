@@ -28,8 +28,8 @@ class Matrix:
 
     def index(self, x, y):
         """Map a bottom left based coordinate to a strip index."""
-        # The strip starts at the top left corner of the panel.
-        row = self.height - 1 - y
+        # The strip starts at the bottom left corner of the panel.
+        row = y
         if self.column_major:
             major, minor, length = x, row, self.height
         else:

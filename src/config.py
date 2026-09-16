@@ -33,13 +33,19 @@ PEAK_FALL = 0.12
 
 # --- Display ----------------------------------------------------------------
 PIN_NEOPIXEL = 1
-DISPLAY_MODE = "strip"  # "strip" for a linear strip, "matrix" for vertical bars
-MATRIX_WIDTH = 18
-MATRIX_HEIGHT = 1
+
+# DISPLAY_MODE = "strip"  # "strip" for a linear strip, "matrix" for vertical bars
+# MATRIX_WIDTH = 18
+# MATRIX_HEIGHT = 1
+
+DISPLAY_MODE = "matrix"  # "strip" for a linear strip, "matrix" for vertical bars
+MATRIX_WIDTH = 8
+MATRIX_HEIGHT = 8
+
 # True when the matrix is wired boustrophedon (every other row/column reversed).
-MATRIX_SERPENTINE = False
+MATRIX_SERPENTINE = True
 # True when pixel 0 walks along a column, False when it walks along a row.
-MATRIX_COLUMN_MAJOR = False
+MATRIX_COLUMN_MAJOR = True
 # 0..255, keep low unless the LEDs have a suitable external power supply.
 BRIGHTNESS = 40
 
