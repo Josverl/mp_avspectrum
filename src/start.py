@@ -2,6 +2,7 @@
 
 import gc
 import time
+import machine
 
 import config
 from display import BarsRenderer, Matrix, StripRenderer
@@ -11,6 +12,7 @@ from spectrum import Spectrum
 
 
 def build():
+    machine.freq(config.CPU_FREQ)
     microphone = Microphone(
         config.I2S_ID,
         config.PIN_SCK,
@@ -20,6 +22,7 @@ def build():
         config.FFT_SIZE,
         bits=config.SAMPLE_BITS,
         ibuf=config.IBUF,
+        capture_blocks=config.CAPTURE_BLOCKS,
     )
     spectrum = Spectrum(
         config.FFT_SIZE,

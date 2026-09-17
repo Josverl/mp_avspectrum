@@ -11,7 +11,7 @@ import time
 import config
 from display import BarsRenderer, Matrix, StripRenderer
 from levels import Levels
-from machine import I2S, Pin
+from machine import I2S, Pin, freq
 from mic import Microphone
 from spectrum import Spectrum
 
@@ -28,6 +28,7 @@ def _matrix():
 
 
 def _microphone():
+    freq(config.CPU_FREQ)
     return Microphone(
         config.I2S_ID,
         config.PIN_SCK,
@@ -37,6 +38,7 @@ def _microphone():
         config.FFT_SIZE,
         bits=config.SAMPLE_BITS,
         ibuf=config.IBUF,
+        capture_blocks=config.CAPTURE_BLOCKS,
     )
 
 

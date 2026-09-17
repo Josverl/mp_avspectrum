@@ -3,6 +3,8 @@
 # Default wiring targets a Raspberry Pi Pico 2 W with an INMP441/SPH0645 I2S
 # MEMS microphone and a WS2812B NeoPixel display.
 
+CPU_FREQ = 250_000_000
+
 # --- I2S microphone ---------------------------------------------------------
 I2S_ID = 0
 PIN_SCK = 6  # bit clock
@@ -11,7 +13,11 @@ PIN_SD = 5   # serial data out of the microphone
 
 SAMPLE_RATE = 16000
 SAMPLE_BITS = 32  # INMP441/SPH0645 send 24 bits left justified in 32 bit words
-IBUF = 20000
+# Drain queued audio and analyse its strongest block so short transients are
+# not missed while the Python FFT is running. This is a safety cap; reads stop
+# earlier as soon as the I2S stream has no complete data ready.
+CAPTURE_BLOCKS = 32
+IBUF = 8192
 
 # --- Analysis ---------------------------------------------------------------
 FFT_SIZE = 128  # power of two; 128 @ 16 kHz gives 125 Hz per bin
@@ -19,7 +25,7 @@ BAND_COUNT = 8  # one per matrix column
 BAND_LOW_HZ = 80
 BAND_HIGH_HZ = 6000
 # Fixed spectral tilt measured against quiet, music and acoustic test tones.
-BAND_GAINS = (1.0, 1.1, 1.4, 1.8, 2.5, 5.0, 9.0, 14.0)
+BAND_GAINS = (1.8, 1.5, 1.4, 1.8, 2.5, 5.0, 9.0, 14.0)
 
 # Envelope follower (0..1 per frame); attack is fast, decay is slow.
 ATTACK = 0.9
