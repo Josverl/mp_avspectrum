@@ -1,0 +1,48 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../ViperIDE"
+		}
+	],
+    "settings": {
+        "chat.tools.terminal.autoApprove": {
+            "&": true
+        },
+        "workbench.colorCustomizations": {
+            "activityBar.activeBackground": "#e2e58e",
+            "activityBar.background": "#e2e58e",
+            "activityBar.foreground": "#15202b",
+            "activityBar.inactiveForeground": "#15202b99",
+            "activityBarBadge.background": "#24979b",
+            "activityBarBadge.foreground": "#e7e7e7",
+            "activityBarTop.activeBackground": "#e2e58e",
+            "activityBarTop.background": "#e2e58e",
+            "activityBarTop.foreground": "#15202b",
+            "activityBarTop.inactiveForeground": "#15202b99",
+            "commandCenter.border": "#15202b99",
+            "commandCenter.foreground": "#15202b",
+            "editorGroup.border": "#e2e58e",
+            "panel.border": "#e2e58e",
+            "sash.hoverBorder": "#e2e58e",
+            "statusBar.background": "#d7db65",
+            "statusBar.debuggingBackground": "#d7db65",
+            "statusBar.debuggingForeground": "#15202b",
+            "statusBar.foreground": "#15202b",
+            "statusBarItem.hoverBackground": "#ccd13c",
+            "statusBarItem.remoteBackground": "#24979b",
+            "statusBarItem.remoteForeground": "#15202b",
+            "tab.activeBorder": "#e2e58e",
+            "titleBar.activeBackground": "#d7db65",
+            "titleBar.activeForeground": "#15202b",
+            "titleBar.inactiveBackground": "#d7db6599",
+            "titleBar.inactiveForeground": "#15202b99",
+            "activityBar.activeBorder": "#15202b",
+            "activityBarTop.activeBorder": "#15202b"
+        },
+        "peacock.color": "#d7db65",
+        "python-envs.defaultEnvManager": "ms-python.python:system"
+    }
+}

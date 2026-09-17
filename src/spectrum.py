@@ -21,13 +21,17 @@ class Spectrum:
         band_count,
         low_hz,
         high_hz,
+        band_gains=None,
     ):
         if not _is_power_of_two(size):
             raise ValueError("FFT size must be a power of two")
+        if band_gains is not None and len(band_gains) != band_count:
+            raise ValueError("band gains must match band count")
 
         self.size = size
         self.sample_rate = sample_rate
         self.band_count = band_count
+        self.band_gains = band_gains
 
         self._re = array("f", bytes(4 * size))
         self._im = array("f", bytes(4 * size))
@@ -160,5 +164,8 @@ class Spectrum:
             total = 0.0
             for i in range(start, stop):
                 total += magnitude[i]
-            bands[band] = total / (stop - start)
+            value = total / (stop - start)
+            if self.band_gains is not None:
+                value *= self.band_gains[band]
+            bands[band] = value
         return bands

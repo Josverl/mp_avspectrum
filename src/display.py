@@ -1,7 +1,54 @@
 # NeoPixel matrix rendering for the spectrum bars.
 
+import time
+from array import array
 from machine import Pin
 from neopixel import NeoPixel
+
+try:
+    import rp2
+except ImportError:
+    rp2 = None
+
+
+if rp2 is not None:
+    @rp2.asm_pio(
+        sideset_init=rp2.PIO.OUT_LOW,
+        out_shiftdir=rp2.PIO.SHIFT_LEFT,
+        autopull=True,
+        pull_thresh=24,
+    )
+    def _ws2812():
+        t1 = 2
+        t2 = 5
+        t3 = 3
+        label("bitloop")
+        out(x, 1).side(0)[t3 - 1]
+        jmp(not_x, "do_zero").side(1)[t1 - 1]
+        jmp("bitloop").side(1)[t2 - 1]
+        label("do_zero")
+        nop().side(0)[t2 - 1]
+
+
+    class _RP2NeoPixel:
+        def __init__(self, pin, count):
+            self._pixels = array("I", bytes(4 * count))
+            self._sm = rp2.StateMachine(4, _ws2812, freq=8_000_000, sideset_base=pin)
+            self._sm.active(1)
+
+        def __setitem__(self, index, color):
+            red, green, blue = color
+            self._pixels[index] = (green << 16) | (red << 8) | blue
+
+        def fill(self, color):
+            red, green, blue = color
+            packed = (green << 16) | (red << 8) | blue
+            for index in range(len(self._pixels)):
+                self._pixels[index] = packed
+
+        def write(self):
+            self._sm.put(self._pixels, 8)
+            time.sleep_us(80)
 
 
 class Matrix:
@@ -24,7 +71,11 @@ class Matrix:
         self.serpentine = serpentine
         self.column_major = column_major
         self.brightness = brightness
-        self.np = NeoPixel(Pin(pin, Pin.OUT), width * height)
+        output = Pin(pin, Pin.OUT)
+        if rp2 is None:
+            self.np = NeoPixel(output, width * height)
+        else:
+            self.np = _RP2NeoPixel(output, width * height)
 
     def index(self, x, y):
         """Map a bottom left based coordinate to a strip index."""

@@ -138,6 +138,7 @@ def bands(frames=200):
         config.BAND_COUNT,
         config.BAND_LOW_HZ,
         config.BAND_HIGH_HZ,
+        config.BAND_GAINS,
     )
     levels = Levels(
         config.BAND_COUNT,
@@ -165,6 +166,7 @@ def visualize(frames=200, verbose=True):
         config.BAND_COUNT,
         config.BAND_LOW_HZ,
         config.BAND_HIGH_HZ,
+        config.BAND_GAINS,
     )
     levels = Levels(
         config.BAND_COUNT,

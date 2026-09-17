@@ -27,6 +27,7 @@ def build():
         config.BAND_COUNT,
         config.BAND_LOW_HZ,
         config.BAND_HIGH_HZ,
+        config.BAND_GAINS,
     )
     levels = Levels(
         config.BAND_COUNT,
@@ -35,6 +36,7 @@ def build():
         config.AGC_DECAY,
         config.AGC_MIN_REFERENCE,
         config.PEAK_FALL,
+        config.NOMINAL_FRAME_MS,
     )
     matrix = Matrix(
         config.PIN_NEOPIXEL,
@@ -61,11 +63,14 @@ def run():
     microphone, spectrum, levels, renderer = build()
     # Collect once up front; the loop itself does not allocate.
     gc.collect()
+    last_update = time.ticks_ms()
     try:
         while True:
             count = microphone.read()
             bands = spectrum.compute(microphone.samples, count)
-            values = levels.update(bands)
+            now = time.ticks_ms()
+            values = levels.update(bands, time.ticks_diff(now, last_update))
+            last_update = now
             renderer.render(values, levels.peaks)
     except KeyboardInterrupt:
         pass
@@ -81,10 +86,16 @@ def bench(frames=50):
     gc.collect()
     try:
         start = time.ticks_ms()
+        last_update = start
         for _ in range(frames):
             count = microphone.read()
             bands = spectrum.compute(microphone.samples, count)
-            renderer.render(levels.update(bands), levels.peaks)
+            now = time.ticks_ms()
+            renderer.render(
+                levels.update(bands, time.ticks_diff(now, last_update)),
+                levels.peaks,
+            )
+            last_update = now
         elapsed = time.ticks_diff(time.ticks_ms(), start)
     finally:
         microphone.deinit()

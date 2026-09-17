@@ -29,6 +29,10 @@ class TestSpectrum(unittest.TestCase):
         with self.assertRaises(ValueError):
             Spectrum(100, SAMPLE_RATE, BANDS, 80, 6000)
 
+    def test_rejects_wrong_number_of_band_gains(self):
+        with self.assertRaises(ValueError):
+            Spectrum(SIZE, SAMPLE_RATE, BANDS, 80, 6000, [1.0])
+
     def test_band_edges_are_increasing(self):
         edges = self.spectrum._band_edges
         self.assertEqual(len(edges), BANDS + 1)
@@ -69,6 +73,13 @@ class TestSpectrum(unittest.TestCase):
         for value in bands:
             self.assertAlmostEqual(value, 0.0)
 
+    def test_applies_band_gains(self):
+        plain = list(self.spectrum.compute(tone(1000)))
+        weighted = Spectrum(SIZE, SAMPLE_RATE, BANDS, 80, 6000, [2.0] * BANDS)
+        gained = weighted.compute(tone(1000))
+        for band in range(BANDS):
+            self.assertAlmostEqual(gained[band], plain[band] * 2.0, delta=1.0)
+
     def test_short_block_is_zero_padded(self):
         bands = self.spectrum.compute(tone(1000, size=SIZE), count=SIZE // 2)
         self.assertGreater(max(bands), 0.0)
@@ -107,6 +118,24 @@ class TestLevels(unittest.TestCase):
             levels.update([value] * BANDS)
             for i in range(BANDS):
                 self.assertGreaterEqual(levels.peaks[i], levels.values[i] - 1e-6)
+
+    def test_transient_peak_precedes_smoothed_level(self):
+        levels = Levels(BANDS, 0.5, 0.25, 0.995, 2000.0, 0.04)
+        levels.update([1e5] + [0.0] * (BANDS - 1))
+        self.assertEqual(levels.peaks[0], 1.0)
+        self.assertEqual(levels.values[0], 0.5)
+
+    def test_dynamics_are_independent_of_frame_rate(self):
+        slow = self.make()
+        fast = self.make()
+        for _ in range(10):
+            slow.update([1e5] * BANDS, 100.0)
+        for _ in range(20):
+            fast.update([1e5] * BANDS, 50.0)
+        for band in range(BANDS):
+            self.assertAlmostEqual(slow.values[band], fast.values[band], places=5)
+            self.assertAlmostEqual(slow.peaks[band], fast.peaks[band], places=5)
+        self.assertAlmostEqual(slow.reference, fast.reference, places=5)
 
     def test_reset(self):
         levels = self.make()

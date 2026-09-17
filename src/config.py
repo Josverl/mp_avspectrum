@@ -18,18 +18,21 @@ FFT_SIZE = 128  # power of two; 128 @ 16 kHz gives 125 Hz per bin
 BAND_COUNT = 8  # one per matrix column
 BAND_LOW_HZ = 80
 BAND_HIGH_HZ = 6000
+# Fixed spectral tilt measured against quiet, music and acoustic test tones.
+BAND_GAINS = (1.0, 1.1, 1.4, 1.8, 2.5, 5.0, 9.0, 14.0)
 
 # Envelope follower (0..1 per frame); attack is fast, decay is slow.
-ATTACK = 0.7
+ATTACK = 0.9
 DECAY = 0.25
+NOMINAL_FRAME_MS = 100.0
 
 # Automatic gain control: the reference level decays towards the loudest band
 # seen recently, so the display stays usable at any volume.
 AGC_DECAY = 0.97
-AGC_MIN_REFERENCE = 2000.0
+AGC_MIN_REFERENCE = 1000.0
 
 # Peak dots fall this many rows per frame (0 disables them).
-PEAK_FALL = 0.12
+PEAK_FALL = 0.04
 
 # --- Display ----------------------------------------------------------------
 PIN_NEOPIXEL = 1

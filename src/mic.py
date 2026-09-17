@@ -40,7 +40,7 @@ class Microphone:
             ibuf=ibuf,
         )
 
-        for _ in range(16):
+        for _ in range(64):
             self.i2s.readinto(self._view)
 
     def read(self):
@@ -52,13 +52,14 @@ class Microphone:
 
         raw = self._raw
         samples = self.samples
-        # 24 bit data arrives left justified in 32 bit words; bring it back to
-        # roughly 16 bit full scale so the analysis numbers stay small.
-        shift = 16 if self.bits == 32 else 0
+        # RP2 I2S capture leaves seven padding bits below the INMP441 payload.
+        # Preserve that payload while retaining the existing 16-bit-like scale.
+        shift = 7 if self.bits == 32 else 0
+        scale = 1.0 / 512.0 if self.bits == 32 else 1.0
 
         total = 0.0
         for i in range(count):
-            value = float(raw[i] >> shift) if shift else float(raw[i])
+            value = float(raw[i] >> shift) * scale if shift else float(raw[i])
             samples[i] = value
             total += value
 

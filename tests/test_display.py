@@ -67,17 +67,16 @@ class TestMatrixMapping(unittest.TestCase):
 
     def test_progressive_row_major_origin(self):
         panel = self.matrix(serpentine=False, column_major=False)
-        # Strip starts top left, so (0, 7) is pixel 0 and (0, 0) starts the last row.
-        self.assertEqual(panel.index(0, 7), 0)
-        self.assertEqual(panel.index(7, 7), 7)
-        self.assertEqual(panel.index(0, 0), 56)
+        self.assertEqual(panel.index(0, 0), 0)
+        self.assertEqual(panel.index(7, 0), 7)
+        self.assertEqual(panel.index(0, 7), 56)
 
     def test_serpentine_reverses_alternate_rows(self):
         panel = self.matrix(serpentine=True, column_major=False)
-        self.assertEqual(panel.index(0, 7), 0)
-        # Second row from the top runs right to left.
-        self.assertEqual(panel.index(7, 6), 8)
-        self.assertEqual(panel.index(0, 6), 15)
+        self.assertEqual(panel.index(0, 0), 0)
+        # Second row from the bottom runs right to left.
+        self.assertEqual(panel.index(7, 1), 8)
+        self.assertEqual(panel.index(0, 1), 15)
 
     def test_brightness_scales_colour(self):
         panel = self.matrix(brightness=128)

@@ -14,6 +14,7 @@ class Levels:
         agc_decay,
         agc_min_reference,
         peak_fall,
+        nominal_frame_ms=100.0,
     ):
         self.band_count = band_count
         self.attack = attack
@@ -21,13 +22,18 @@ class Levels:
         self.agc_decay = agc_decay
         self.agc_min_reference = agc_min_reference
         self.peak_fall = peak_fall
+        self.nominal_frame_ms = nominal_frame_ms
         self.reference = agc_min_reference
 
         self.values = array("f", bytes(4 * band_count))
         self.peaks = array("f", bytes(4 * band_count))
 
-    def update(self, bands):
+    def update(self, bands, elapsed_ms=None):
         """Feed one frame of band magnitudes, return normalised levels."""
+        frame_scale = 1.0 if elapsed_ms is None else elapsed_ms / self.nominal_frame_ms
+        if frame_scale < 0.0:
+            frame_scale = 0.0
+
         loudest = 0.0
         for value in bands:
             if value > loudest:
@@ -35,7 +41,7 @@ class Levels:
 
         # The reference tracks the loudest band instantly when it grows and
         # slowly relaxes back down, which keeps quiet passages visible.
-        reference = self.reference * self.agc_decay
+        reference = self.reference * self.agc_decay**frame_scale
         if loudest > reference:
             reference = loudest
         if reference < self.agc_min_reference:
@@ -44,9 +50,9 @@ class Levels:
 
         values = self.values
         peaks = self.peaks
-        attack = self.attack
-        decay = self.decay
-        fall = self.peak_fall
+        attack = 1.0 - (1.0 - self.attack) ** frame_scale
+        decay = 1.0 - (1.0 - self.decay) ** frame_scale
+        fall = self.peak_fall * frame_scale
 
         for i in range(self.band_count):
             target = bands[i] / reference
@@ -58,6 +64,8 @@ class Levels:
             values[i] = current
 
             peak = peaks[i] - fall
+            if target > peak:
+                peak = target
             if current > peak:
                 peak = current
             elif peak < 0.0:
