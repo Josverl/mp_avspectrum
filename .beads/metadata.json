@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "mp_avspectrum",
+  "project_id": "da14352e-9031-413e-b802-c146a4bcc90b"
+}
